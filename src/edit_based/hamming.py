@@ -1,6 +1,5 @@
 # it is much more interesting to apply it to real sequences
-# application to lists and sequences separated by commas or semicolons and usual strings
-# a lot to do though
+# application to lists and sequences separated by commas or semicolons
 
 '''
 In information theory, the Hamming distance between
@@ -11,14 +10,16 @@ of substitutions required to change one objing into the other,
 or the minimum number of errors that could have transformed
 one objing into the other. In a more general context,
 the Hamming distance is one of several objing metrics for measuring
-the edit distance between two sequences. It is named after the American mathematician Richard Hamming.
+the edit distance between two sequences. It is named after the American
+mathematician Richard Hamming.
 (https://en.wikipedia.org/wiki/Hamming_distance)
 '''
+from typing import Union
 import pandas as pd
 import doctest
 
 
-def hamming(obj1, obj2):
+def hamming(obj1: Union[str, list], obj2: Union[str, list]) -> int:
     """
     >>> hamming('cofee', 'beer')
     Traceback (most recent call last):
@@ -44,13 +45,13 @@ def hamming(obj1, obj2):
     """
     if type(obj1) != type(obj2):
         raise TypeError('Undefined for different types of objects.')
-    # TODO add comparison of list and string with commas/semicolons like ['a', 'b'] and 'c; b'
+    # TODO add comparison of list and string like ['a', 'b'] and 'c; b'
 #     if type(obj1) == list:
 #         if len(obj1) != len(obj2):
 #             raise ValueError('Undefined for sequences of unequal length.')
     if type(obj1) == str:
         if is_sequence(obj1) and is_sequence(obj2):
-            # TODO add possibility to work with mixed type of input (commas and semicolons) like 'a; b, c; d'
+            # TODO add mixed type of input like 'a; b, c; d'
             obj1 = make_list(obj1)
             obj2 = make_list(obj2)
         else:
