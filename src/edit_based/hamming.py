@@ -31,47 +31,27 @@ def hamming(obj1: Union[str, list], obj2: Union[str, list]) -> int:
     4
     >>> hamming('love', 'love')
     0
-    >>> hamming('pain', 'rain')
-    1
+    >>> hamming('pain', 'psql')
+    3
     >>> hamming([1,2,3], [1,3,2])
     2
-    >>> hamming('walk, talk, coffee', 'walk; talk; beer')
+    >>> hamming('walk, talk, coffee', 'walk; talk, beer')
     1
     >>> hamming('CND, ETH, BTC', ['CND', 'ETH', 'BTC'])
-    Traceback (most recent call last):
-        <ipython-input-21-4d6b16c2901a> in <module>
-        <ipython-input-20-f75efa8708f1> in hamming(obj1, obj2)
-    TypeError: Undefined for different types of objects.
+    0
     """
-    if type(obj1) != type(obj2):
-        raise TypeError('Undefined for different types of objects.')
-    # TODO add comparison of list and string like ['a', 'b'] and 'c; b'
-#     if type(obj1) == list:
-#         if len(obj1) != len(obj2):
-#             raise ValueError('Undefined for sequences of unequal length.')
-    if type(obj1) == str:
-        if is_sequence(obj1) and is_sequence(obj2):
-            # TODO add mixed type of input like 'a; b, c; d'
-            obj1 = make_list(obj1)
-            obj2 = make_list(obj2)
-        else:
-            obj1 = list(obj1)
-            obj2 = list(obj2)
-        if len(obj1) != len(obj2):
-            raise ValueError('Undefined for sequences of unequal length.')
+    obj1 = if_string(obj1)
+    obj2 = if_string(obj2)
+    if len(obj1) != len(obj2):
+        raise ValueError('Undefined for sequences of unequal length.')
     crazy_df = pd.DataFrame({'obj1': obj1, 'obj2': obj2})
-    crazy_df['no_coincidence'] = (crazy_df['obj1'] != crazy_df['obj2'])*1
+    crazy_df['no_coincidence'] = (crazy_df['obj1'] != crazy_df['obj2']) * 1
     return crazy_df['no_coincidence'].sum()
 
 
 def make_list(seq):
-    comma_separated = seq.find(',')
-    if comma_separated != -1:
-        seq = seq.split(',')
-    else:
-        semicolon_separated = seq.find(';')
-        if semicolon_separated != -1:
-            seq = seq.split(';')
+    seq = seq.replace(';', ',')
+    seq = seq.split(',')
     seq = [s.strip() for s in seq]
     return seq
 
@@ -80,6 +60,15 @@ def is_sequence(seq):
     comma = seq.find(',')
     semicolon = seq.find(';')
     return (comma != -1) or (semicolon != -1)
+
+
+def if_string(seq):
+    if type(seq) == str:
+        if is_sequence(seq):
+            seq = make_list(seq)
+        else:
+            seq = list(seq)
+    return seq
 
 
 doctest.testmod()
