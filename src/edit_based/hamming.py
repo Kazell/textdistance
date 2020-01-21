@@ -19,29 +19,31 @@ import pandas as pd
 import doctest
 
 
-def hamming(obj1: Union[str, list], obj2: Union[str, list]) -> int:
+def hamming(obj1: Union[str, list], obj2: Union[str, list], sequences: bool)\
+        -> int:
     """
-    >>> hamming('cofee', 'beer')
-    Traceback (most recent call last):
-        <ipython-input-22-8dd38782a5ef> in <module>
-        <ipython-input-21-3a6a0e35205f> in hamming(obj1, obj2)
-        raise ValueError('Undefined for sequences of unequal length.')
-    ValueError: Undefined for sequences of unequal length.
-    >>> hamming('cindi', 'cator')
-    4
-    >>> hamming('love', 'love')
-    0
-    >>> hamming('pain', 'psql')
-    3
-    >>> hamming([1,2,3], [1,3,2])
-    2
-    >>> hamming('walk, talk, coffee', 'walk; talk, beer')
+    >>> hamming('cofee', 'beer', sequences=True)
     1
-    >>> hamming('CND, ETH, BTC', ['CND', 'ETH', 'BTC'])
+    >>> hamming('cindi', 'cator', sequences=False)
+    4
+    >>> hamming('love', 'love', sequences=True)
+    0
+    >>> hamming('pain', 'psql', sequences=False)
+    3
+    >>> hamming([1,2,3], [1,3,2], sequences=True)
+    2
+    >>> hamming('walk, talk, coffee', 'walk; talk, beer', sequences=True)
+    1
+    >>> hamming('CND, ETH, BTC', ['CND', 'ETH', 'BTC'], sequences=True)
     0
     """
-    obj1 = if_string(obj1)
-    obj2 = if_string(obj2)
+    if not sequences:
+        if (type(obj1) != str) or (type(obj1) != str):
+            raise TypeError('Put sequences=True for lists')
+    obj1 = if_string(obj1, sequences)
+#     print(obj1)
+    obj2 = if_string(obj2, sequences)
+#     print(obj2)
     if len(obj1) != len(obj2):
         raise ValueError('Undefined for sequences of unequal length.')
     crazy_df = pd.DataFrame({'obj1': obj1, 'obj2': obj2})
@@ -51,20 +53,16 @@ def hamming(obj1: Union[str, list], obj2: Union[str, list]) -> int:
 
 def make_list(seq):
     seq = seq.replace(';', ',')
+    if (seq.find(',') == -1) and (seq.find(';') == -1):
+        seq = seq.replace(' ', ',')
     seq = seq.split(',')
     seq = [s.strip() for s in seq]
     return seq
 
 
-def is_sequence(seq):
-    comma = seq.find(',')
-    semicolon = seq.find(';')
-    return (comma != -1) or (semicolon != -1)
-
-
-def if_string(seq):
+def if_string(seq, sequences):
     if type(seq) == str:
-        if is_sequence(seq):
+        if sequences:
             seq = make_list(seq)
         else:
             seq = list(seq)
